@@ -94,19 +94,77 @@ Modern applications often need to manage limited resources, like memory or disk 
     -   Frequently accessed assets like textures or maps are cached to minimize load times.
 
 ----------
-
 ## Implementation Details
 
-The LFU Cache implementation in this repository uses a combination of HashMaps and Doubly Linked Lists to achieve optimal time complexity.
+Let’s understand the LFU Cache algorithm with an example:
 
-### Data Structures:
+### Cache Details
 
-1.  **HashMap (`cache`)**:
-    -   Maps keys to DLL nodes for O(1) access to cache elements.
-2.  **HashMap (`frequencyMap`)**:
-    -   Maps frequency values to Doubly Linked Lists that store all items with the same frequency.
-3.  **Doubly Linked List**:
-    -   Efficiently maintains insertion and removal of nodes.
+-   **Capacity**: 3
+### Operations
+
+1.  **`put(1, 10)`**
+    ![1](https://github.com/user-attachments/assets/1ebf09f0-3a08-486c-be52-6b300728f632)
+
+    
+    -   Cache is empty; insert the key `1` with value `10` and frequency `1`.
+    -   **Cache**: `{1: 10 (freq: 1)}`
+2.  **`put(2, 20)`**
+     [2](https://github.com/user-attachments/assets/24f23220-62b5-403e-8cb3-9dfbdb11ca32)
+
+    -   Cache has space; insert key `2` with value `20` and frequency `1`.
+    -   **Cache**: `{1: 10 (freq: 1), 2: 20 (freq: 1)}`
+3.  **`put(3, 30)`**
+    ![3](https://github.com/user-attachments/assets/f51868cd-d051-4ea2-8804-aeff0667aa1b)
+
+    -   Cache has space; insert key `3` with value `30` and frequency `1`.
+    -   **Cache**: `{1: 10 (freq: 1), 2: 20 (freq: 1), 3: 30 (freq: 1)}`
+4.  **`put(4, 40)`**
+    ![4](https://github.com/user-attachments/assets/b1eb2491-864a-482d-a39a-ddda03779284)
+
+    -   Cache is full; remove the least frequently used block.
+    -   All blocks have the same frequency (`1`), so remove the block added first (`1`).
+    -   Insert key `4` with value `40` and frequency `1`.
+    -   **Cache**: `{2: 20 (freq: 1), 3: 30 (freq: 1), 4: 40 (freq: 1)}`
+5.  **`get(3)`**
+    ![5](https://github.com/user-attachments/assets/1a7c2980-a370-4048-9284-5b112dd2ad4b)
+
+    -   Fetch value `30` for key `3` and increment its frequency.
+    -   **Cache**: `{2: 20 (freq: 1), 3: 30 (freq: 2), 4: 40 (freq: 1)}`
+
+----------
+
+## Data Structures Required
+
+### 1. `map<freq, DoublyLinkedList>` (frequencyMap)
+
+-   **Purpose**: Tracks all cache blocks for each frequency.
+-   **Key**: Frequency count (integer).
+-   **Value**: A Doubly Linked List containing all blocks with the same frequency.
+-   **Why Doubly Linked List?**: Allows efficient insertion and removal of nodes.
+
+### 2. `map<key, DLLNode>` (cache)
+
+-   **Purpose**: Maps keys to their corresponding DLLNode for quick access.
+-   **Key**: Cache key (integer).
+-   **Value**: Node containing key, value, and frequency.
+
+### 3. `curSize`
+
+-   **Purpose**: Tracks the current size of the cache.
+
+### 4. `minFrequency`
+
+-   **Purpose**: Tracks the minimum frequency of any block in the cache to efficiently identify eviction candidates.
+
+### DRY RUN
+
+![20241201_134951](https://github.com/user-attachments/assets/4824b9d5-030d-45fc-8380-7bc9ce351f2b)
+
+
+![20241201_134914](https://github.com/user-attachments/assets/bc51bfae-f7ac-42a8-a09a-3f06d4e791bb)
+
+
 
 ### Complexity:
 
